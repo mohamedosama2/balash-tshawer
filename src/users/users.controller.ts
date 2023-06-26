@@ -21,7 +21,6 @@ import {
 import { FileFieldsInterceptor } from '@nestjs/platform-express';
 import { request } from 'http';
 import { Roles } from 'src/auth/decorators/roles.decorator';
-import { UpdateUserDto } from './dto/update-user.dto';
 import { User, UserDocument, UserRole } from './models/_user.model';
 import { UsersService } from './users.service';
 import { REQUEST } from '@nestjs/core';
@@ -33,11 +32,11 @@ import { Public } from 'src/auth/decorators/public.decorator';
 import { FilterQuery, PaginateResult } from 'mongoose';
 import { ApiBearerAuth, ApiBody, ApiConsumes, ApiTags } from '@nestjs/swagger';
 import { ApiOkResponseGeneral } from 'src/utils/pagination/apiOkResponseGeneral';
-import { Student } from './models/student.model';
-import { Teacher } from './models/teacher.model';
+
 import { FilterQueryOptionsUser } from './dto/filterQueryOptions.dto';
 import { UserRepository } from './users.repository';
 import { Constants } from 'src/utils/constants';
+import { UpdateCustomerDto, UpdateDriverDto } from './dto/update-user.dto';
 
 @ApiBearerAuth()
 @ApiTags('USERS')
@@ -67,17 +66,56 @@ export class UsersController {
     return await this.usersService.getProfile(this.req.me as UserDocument);
   }
 
-  @Patch('profile')
-  @UseInterceptors(FileFieldsInterceptor([{ name: 'photo', maxCount: 1 }]))
+  @Roles(UserRole.DRIVER)
+  @Patch('/profile/driver')
+  @UseInterceptors(
+    FileFieldsInterceptor([
+      { name: 'photo', maxCount: 1 },
+      { name: 'head_license_self', maxCount: 1 },
+      { name: 'back_license_self', maxCount: 1 },
+      { name: 'head_license_car', maxCount: 1 },
+      { name: 'back_license_car', maxCount: 1 },
+    ]),
+  )
   @ApiConsumes('multipart/form-data')
-  async updateProfile(
+  async updateProfileDriver(
     @UploadedFiles()
     files,
-    @Body() updateUserData: UpdateUserDto,
+    @Body() updateUserData: UpdateDriverDto,
+  ): Promise<UserDocument> {
+    if (files && files.photo) updateUserData.photo = files.photo[0].secure_url;
+    if (files && files.head_license_self)
+      updateUserData.head_license_self = files.head_license_self[0].secure_url;
+    if (files && files.back_license_self)
+      updateUserData.back_license_self = files.back_license_self[0].secure_url;
+    if (files && files.head_license_car)
+      updateUserData.head_license_car = files.head_license_car[0].secure_url;
+    if (files && files.back_license_car)
+      updateUserData.back_license_car = files.back_license_car[0].secure_url;
+
+    delete updateUserData.enabled;
+
+/*     console.log(updateUserData)
+ */
+    return await this.usersService.update(
+      { _id: this.req.me } as FilterQuery<UserDocument>,
+      updateUserData,
+    );
+  }
+
+  @Roles(UserRole.CUSTOMER)
+  @Patch('/profile/customer')
+  @UseInterceptors(FileFieldsInterceptor([{ name: 'photo', maxCount: 1 }]))
+  @ApiConsumes('multipart/form-data')
+  async updateProfileCustomer(
+    @UploadedFiles()
+    files,
+    @Body() updateUserData: UpdateCustomerDto,
   ): Promise<UserDocument> {
     if (files && files.photo) updateUserData.photo = files.photo[0].secure_url;
 
     delete updateUserData.enabled;
+    console.log(updateUserData);
 
     return await this.usersService.update(
       { _id: this.req.me } as FilterQuery<UserDocument>,
@@ -95,6 +133,12 @@ export class UsersController {
       { oldPassword, newPassword },
       me,
     );
+  }
+
+  @Get('get-my-markers')
+  async getMyStrictMarkers(@AuthUser() me: User) {
+      console.log("get my markers ")
+    return this.usersService.getMyStrictMarkers(me);
   }
 
   @Public()

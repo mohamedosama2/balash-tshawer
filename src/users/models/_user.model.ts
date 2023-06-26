@@ -16,8 +16,8 @@ export type UserDocument = User & Document;
 
 export enum UserRole {
   ADMIN = 'admin',
-  STUDENT = 'student',
-  TEACHER = 'teacher',
+  DRIVER = 'driver',
+  CUSTOMER = 'customer',
 }
 
 export enum DeviceType {
@@ -39,7 +39,7 @@ export interface PushToken {
     virtuals: true,
     transform: (_, doc: Record<string, unknown>) => {
       delete doc.__v;
-      delete doc._id;
+
       delete doc.password;
       return {
         ...doc,
@@ -49,6 +49,7 @@ export interface PushToken {
 })
 export class User {
   id?: string;
+  _id?: string;
   @Prop({
     index: true,
     unique: true,
@@ -112,6 +113,35 @@ export class User {
     ]),
   )
   pushTokens: PushToken[];
+
+  @Prop(
+    raw({
+      type: {
+        type: String,
+        default: 'Point',
+      },
+      coordinates: {
+        type: [Number],
+        index: { type: '2dsphere', sparse: false },
+      },
+    }),
+  )
+  location?: {
+    type: string;
+    coordinates: Array<number>;
+  };
+
+  @Prop({ type: String, required: true })
+  city: string;
+
+  @Prop({ type: String, default: 'none' })
+  district_start?: string;
+
+  @Prop({ type: String, default: 'none' })
+  district_end?: string;
+
+  @Prop({ tyoe: Boolean, default: false })
+  isAvailable: boolean;
 }
 
 const UserSchema = SchemaFactory.createForClass(User);

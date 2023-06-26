@@ -1,0 +1,17 @@
+{
+    "version": 2,
+    "name": "nestjs-now-saif3",
+    "installCommand": "npm install --force",
+    "builds": [
+      {
+        "src": "dist/main.js",
+        "use": "@now/node"
+      }
+    ],
+    "routes": [
+      {
+        "src": "/(.*)",
+        "dest": "dist/main.js"
+      }
+    ]
+  }

@@ -21,10 +21,11 @@ import { CheckCodeToResetDto } from './dto/check-code-to-reset.dto';
 import { UsersService } from 'src/users/users.service';
 import { UpdateUserDto } from 'src/users/dto/update-user.dto';
 import { ResetPasswordDto } from './dto/reset-password.dto';
-import { StudentDocument } from 'src/users/models/student.model';
+
 import { FilterQuery } from 'mongoose';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { UserRepository } from 'src/users/users.repository';
+import { CustomerDocument } from 'src/users/models/customer.model';
 
 @ApiTags('AUTH')
 @Controller('auth')
@@ -38,7 +39,8 @@ export class AuthController {
 
   @Public()
   @Post('/signup')
-  async register(@Body() RegisterDto: RegisterDto): Promise<StudentDocument> {
+  async register(@Body() RegisterDto: RegisterDto): Promise<CustomerDocument> {
+    console.log(RegisterDto)
     let user = await this.authService.register(RegisterDto);
     await this.phoneConfirmationService.sendSMS({
       phone: RegisterDto.phone,

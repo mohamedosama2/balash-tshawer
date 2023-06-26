@@ -17,9 +17,10 @@ import axios from 'axios';
 import { ConfigService } from '@nestjs/config';
 import { UserNotFoundException } from 'src/users/exceptions/userNotFound.exception';
 import { JwtService } from '@nestjs/jwt';
-import { StudentDocument } from 'src/users/models/student.model';
+
 import { CreateQuery, FilterQuery } from 'mongoose';
 import { UserRepository } from 'src/users/users.repository';
+import { CustomerDocument } from 'src/users/models/customer.model';
 
 @Injectable()
 export class AuthService {
@@ -29,7 +30,7 @@ export class AuthService {
     private readonly jwtService: JwtService,
   ) {}
 
-  async register(registerationData: RegisterDto): Promise<StudentDocument> {
+  async register(registerationData: RegisterDto): Promise<CustomerDocument> {
     let user = await this.userRepository.findOne({
       phone: registerationData.phone,
     } as FilterQuery<UserDocument>);
@@ -40,7 +41,7 @@ export class AuthService {
     // } as CreateQuery<UserDocument>);
     user = await this.userRepository.createDoc({
       ...registerationData,
-      role: 'student',
+      enabled: true,
     } as User);
     return user;
   }
@@ -88,7 +89,7 @@ export class AuthService {
         username: name,
         email,
         facebookId: id,
-        role: 'student',
+        role: 'customer',
       } as CreateQuery<UserDocument>);
     }
     return user;

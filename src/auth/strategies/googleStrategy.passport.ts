@@ -33,7 +33,7 @@ export class GoogleOauthStrategy extends PassportStrategy(Strategy, 'google') {
         email: emails[0].value,
         photo: _json.picture,
         googleId: id,
-        role: 'student',
+        role: 'customer',
       } as CreateQuery<UserDocument>);
     }
     req.me = user;

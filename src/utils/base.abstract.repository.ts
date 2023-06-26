@@ -94,6 +94,13 @@ export abstract class BaseAbstractRepository<T> {
   ): Promise<void> {
     await this.model.updateOne(filterQuery, updateQuery);
   }
+  public async findOneAndUpdate(
+    filterQuery: FilterQuery<TDocument<T>>,
+    updateQuery: UpdateQuery<TDocument<T>>,
+    options: QueryOptions = {},
+  ): Promise<void> {
+    await this.model.findOneAndUpdate(filterQuery, updateQuery);
+  }
   public async updateAllVoid(
     filterQuery: FilterQuery<TDocument<T>>,
     updateQuery: UpdateQuery<TDocument<T>>,
@@ -106,6 +113,7 @@ export abstract class BaseAbstractRepository<T> {
     pipeline?: Array<Record<string, unknown>>,
     options?: ChangeStreamOptions,
   ): ChangeStream<any> {
+    console.log("watching now")
     return this.model.watch(pipeline, options);
   }
 }

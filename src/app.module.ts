@@ -12,6 +12,7 @@ import { CacheConfigService } from './cache/cacheConfigService';
 import { cacheOperationsModule } from './cache/cache.module';
 import { NotificationModule } from './notification/notification.module';
 import { ChangeStreamsModule } from './change-streams/change-streams.module';
+import { WalletModule } from './wallet/wallet.module';
 @Module({
   imports: [
     ConfigModule.forRoot(),
@@ -21,6 +22,7 @@ import { ChangeStreamsModule } from './change-streams/change-streams.module';
     PhoneConfirmationModule,
     ChatModule,
     NotificationModule,
+    WalletModule,
     // ChangeStreamsModule,
     // MessageQueueModule,
     // cacheOperationsModule,

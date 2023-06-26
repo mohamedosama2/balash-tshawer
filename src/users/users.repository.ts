@@ -21,6 +21,12 @@ export class UserRepository extends BaseAbstractRepository<User> {
       .select('_id pushTokens');
   }
 
+  async fetchUsersWithFilter(
+    filter: FilterQuery<UserDocument>,
+  ): Promise<UserDocument[]> {
+    return await this.userModel.find(filter);
+  }
+
   async fetchShouldSend() {
     return await this.userModel.countDocuments({
       'pushTokens.0': { $exists: true },

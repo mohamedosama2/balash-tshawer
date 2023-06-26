@@ -12,15 +12,14 @@ import {
 import { PaginationParams } from './utils/pagination/paginationParams.dto';
 import { PaginatedDto } from './utils/pagination/paginated.dto';
 import { User } from './users/models/_user.model';
-import { Student } from './users/models/student.model';
-import { Teacher } from './users/models/teacher.model';
+
 import { FilterQueryOptionsUser } from './users/dto/filterQueryOptions.dto';
 import ParamsWithId from './utils/paramsWithId.dto';
 import { RedisIoAdapter } from './chat/redisIoAdapter';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
-  app.useWebSocketAdapter(new RedisIoAdapter(app));
+  // app.useWebSocketAdapter(new RedisIoAdapter(app));
   app.use(logger('dev'));
   app.enableCors();
   app.use(helmet());
@@ -52,6 +51,7 @@ async function bootstrap() {
     extraModels: [PaginatedDto, User, FilterQueryOptionsUser, ParamsWithId],
   });
   SwaggerModule.setup('api', app, document, customOptions);
-  await app.listen(process.env.PORT);
+  const server = await app.listen(process.env.PORT);
+  server.setTimeout(1800000);
 }
 bootstrap();

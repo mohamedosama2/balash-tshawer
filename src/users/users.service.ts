@@ -43,6 +43,15 @@ export class UsersService {
     return users;
   }
 
+  async getMyStrictMarkers(me: User) {
+    return await this.userRepository.fetchUsersWithFilter({
+      city: me.city,
+      district_start: me.district_start,
+      district_end: me.district_end,
+      isAvailable: true,
+    });
+  }
+
   async findOne(filter: FilterQuery<UserDocument>): Promise<UserDocument> {
     const user = await this.userRepository.findOne(filter);
     return user;

@@ -40,3 +40,4 @@ lerna-debug.log*
 
 # k8s folder
 # kubernetes
+.vercel
